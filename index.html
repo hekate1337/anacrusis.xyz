@@ -1,3 +1,30 @@
-  <html>
-  <title>Test</title>
-  </html>
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anacrusis – Eventmanagement</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/">Anacrusis <span>Events</span></a>
+    <nav>
+      <a href="#/" data-nav="dashboard">Übersicht</a>
+      <a href="#/events" data-nav="events">Events</a>
+    </nav>
+    <div class="spacer"></div>
+    <button class="btn ghost" id="btn-export" title="Daten als JSON sichern">Export</button>
+    <label class="btn ghost" title="Daten aus JSON laden">Import
+      <input type="file" id="file-import" accept="application/json" hidden>
+    </label>
+    <button class="btn primary" id="btn-new-event">+ Neues Event</button>
+  </header>
+
+  <main id="app" class="container"></main>
+
+  <dialog id="dialog"><form method="dialog" id="dialog-form"></form></dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
