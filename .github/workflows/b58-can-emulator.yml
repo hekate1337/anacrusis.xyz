@@ -1,0 +1,63 @@
+name: b58-can-emulator
+
+on:
+  push:
+    branches: [master]
+    paths: ["b58-can-emulator/**", ".github/workflows/b58-can-emulator.yml"]
+  pull_request:
+    paths: ["b58-can-emulator/**", ".github/workflows/b58-can-emulator.yml"]
+
+defaults:
+  run:
+    working-directory: b58-can-emulator
+
+jobs:
+  unit:
+    name: unit tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m compileall -q bmw_b58_emu tests
+      - run: python -m unittest discover -s tests -t . -v
+
+  socketcan:
+    name: SocketCAN (vcan0) end-to-end
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Load vcan module
+        run: |
+          sudo modprobe vcan || {
+            sudo apt-get update -q
+            sudo apt-get install -y -q "linux-modules-extra-$(uname -r)"
+            sudo modprobe vcan
+          }
+      - name: Create vcan0
+        run: sudo scripts/setup_vcan.sh vcan0
+      - name: SocketCAN tests
+        env:
+          B58_REQUIRE_VCAN: "1"
+        run: python -m unittest tests.test_socketcan -v
+      - name: udsoncan example against the running emulator
+        run: |
+          python -m pip install -q python-can can-isotp udsoncan
+          python -m bmw_b58_emu -i vcan0 --api-port 0 --start-engine &
+          EMU=$!
+          sleep 2
+          python examples/udsoncan_client.py vcan0
+          kill "$EMU"
+      - name: Package installs and console scripts start
+        run: |
+          python -m pip install -q .
+          b58-emu --help >/dev/null
+          b58-tester --help >/dev/null

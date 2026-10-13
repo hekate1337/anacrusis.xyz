@@ -90,8 +90,16 @@ def main(argv: Optional[list] = None) -> int:
     ap.add_argument("mode", choices=["obd", "bmw"], help="obd = 0x7E0/0x7E8, bmw = 0x6F1/0x612 (ECU 0x12)")
     ap.add_argument("bytes", nargs="+", help="request bytes in hex, e.g. 22 F1 90")
     a = ap.parse_args(argv)
-    req = bytes.fromhex("".join(a.bytes))
-    with SocketCanBus(a.iface) as bus:
+    try:
+        req = bytes.fromhex("".join(a.bytes))
+    except ValueError:
+        ap.error("request bytes must be hex, e.g. 22 F1 90")
+    try:
+        bus = SocketCanBus(a.iface)
+    except OSError as e:
+        print(f"error: cannot open CAN interface {a.iface!r}: {e}", file=sys.stderr)
+        return 2
+    with bus:
         client = (obd_client(bus) if a.mode == "obd" else bmw_client(bus)).start()
         try:
             resp = client.request(req, a.timeout)
