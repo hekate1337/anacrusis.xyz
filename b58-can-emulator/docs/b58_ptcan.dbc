@@ -1,0 +1,58 @@
+VERSION "b58-can-emulator 0.1"
+
+NS_ :
+
+BS_:
+
+BU_: DME
+
+BO_ 165 DME_Engine: 8 DME
+ SG_ Crc8 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ AliveCounter : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ EngineTorque : 16|16@1- (0.5,0) [-1000|1000] "Nm" Vector__XXX
+ SG_ EngineSpeed : 32|16@1+ (0.25,0) [0|8000] "rpm" Vector__XXX
+ SG_ AcceleratorPedal : 48|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+ SG_ EngineRunning : 56|8@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 417 DME_Speed: 8 DME
+ SG_ Crc8 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ AliveCounter : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ VehicleSpeed : 16|16@1+ (0.01,0) [0|300] "km/h" Vector__XXX
+ SG_ BrakePedal : 32|8@1+ (0.392157,0) [0|100] "%" Vector__XXX
+ SG_ Gear : 40|4@1+ (1,0) [0|8] "" Vector__XXX
+
+BO_ 464 DME_Temps: 8 DME
+ SG_ Crc8 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ AliveCounter : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CoolantTemp : 16|8@1+ (1,-48) [-48|207] "degC" Vector__XXX
+ SG_ OilTemp : 24|8@1+ (1,-48) [-48|207] "degC" Vector__XXX
+ SG_ IntakeAirTemp : 32|8@1+ (1,-48) [-48|207] "degC" Vector__XXX
+ SG_ BoostPressure : 40|8@1+ (2,0) [0|510] "kPa" Vector__XXX
+ SG_ AmbientPressure : 48|16@1+ (0.1,0) [0|120] "kPa" Vector__XXX
+
+BO_ 303 DME_Terminals: 8 DME
+ SG_ Crc8 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ AliveCounter : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ KL_R : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_15 : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_50 : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ MIL : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ EngineState : 24|8@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ BatteryVoltage : 32|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
+
+BO_ 714 DME_Ambient: 8 DME
+ SG_ Crc8 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ AliveCounter : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AmbientTemp : 16|8@1+ (0.5,-40) [-40|87.5] "degC" Vector__XXX
+
+BO_ 816 DME_Odometer: 8 DME
+ SG_ Crc8 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ AliveCounter : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Odometer : 16|24@1+ (1,0) [0|16777215] "km" Vector__XXX
+ SG_ FuelLevel : 40|8@1+ (0.392157,0) [0|100] "%" Vector__XXX
+
+BO_ 1298 DME_NM: 8 DME
+ SG_ SourceAddress : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ NmAlive : 12|4@1+ (1,0) [0|15] "" Vector__XXX
+
+CM_ "Layouts are emulator-defined (BMW PT-CAN style: CRC8 J1850 in byte 0, alive counter in byte 1 low nibble); not BMW's proprietary matrix.";

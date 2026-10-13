@@ -1,0 +1,17 @@
+[project]
+name = "bmw-b58-emu"
+version = "0.1.0"
+description = "BMW B58 DME + OBD-II CAN bus emulator for SocketCAN (vcan)"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+b58-emu = "bmw_b58_emu.__main__:main"
+b58-tester = "bmw_b58_emu.tester:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["bmw_b58_emu"]
