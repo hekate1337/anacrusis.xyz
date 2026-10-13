@@ -13,6 +13,9 @@ and maintenance tools see coherent, changing data. No third-party dependencies (
 
 ## Quick start
 
+Step-by-step setup, the CAN IDs to configure in your tool, and connection examples (built-in tester, udsoncan,
+can-utils, SavvyCAN): **[docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)**.
+
 ```bash
 cd b58-can-emulator
 sudo scripts/setup_vcan.sh vcan0          # modprobe vcan + create/up the interface (needs a real Linux kernel)
@@ -67,11 +70,16 @@ specs. Flash/programming services are intentionally absent. The physics is a pla
 python3 -m unittest discover -s tests -t .     # ~30 s; runs over an in-process virtual bus, no root needed
 ```
 Covers ISO-TP (multi-frame, block size/STmin), OBD, UDS (sessions, security, lockout, writes, DTCs, resets), broadcast
-CRC/counters, vehicle model, and the HTTP API. **The SocketCAN transport itself is not covered by the automated
-tests** (no CAN support in the CI/sandbox kernel) — verify it once on your machine with the quick start above.
+CRC/counters, vehicle model, DTC store and state persistence, the CLI and the HTTP API.
+
+`tests/test_socketcan.py` runs the same stack over a real SocketCAN interface (raw frames, DME, and the
+`bmw_b58_emu` / `tester` command lines end to end). It skips itself unless `vcan0` exists
+(`B58_VCAN_IFACE` picks another interface). CI ([workflow](../.github/workflows/b58-can-emulator.yml)) creates
+`vcan0` on the runner and runs it, plus [`examples/udsoncan_client.py`](examples/udsoncan_client.py) against the
+running emulator.
 
 ## Layout
 
 `bus.py` SocketCAN + in-memory bus · `isotp.py` ISO 15765-2 · `node.py` RX demux + cyclic scheduler · `dme.py` ECU wiring ·
 `uds.py` / `obd.py` / `dids.py` / `dtc.py` protocol logic · `vehicle.py` simulation · `broadcast.py` cyclic frames ·
-`api.py` control API · `tester.py` client/CLI · `vcan.py` interface helper.
+`api.py` control API · `tester.py` client/CLI · `vcan.py` interface helper · `examples/` third-party client example.

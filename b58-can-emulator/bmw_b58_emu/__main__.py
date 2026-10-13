@@ -15,13 +15,20 @@ from .vcan import ensure_vcan
 from .vehicle import Ignition, Vehicle
 
 
+def _vin(text: str) -> str:
+    text = text.strip().upper()
+    if len(text) != 17 or not text.isalnum() or any(c in "IOQ" for c in text):
+        raise argparse.ArgumentTypeError("VIN must be 17 letters/digits without I, O or Q")
+    return text
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="bmw_b58_emu", description="BMW B58 DME + OBD-II CAN bus emulator")
     ap.add_argument("-i", "--iface", default="vcan0", help="SocketCAN interface (default vcan0)")
     ap.add_argument("--create-vcan", action="store_true", help="create/bring up the vcan interface first (needs root)")
     ap.add_argument("--api-host", default="127.0.0.1")
     ap.add_argument("--api-port", type=int, default=8080, help="control API port, 0 disables")
-    ap.add_argument("--vin", help="17-character VIN")
+    ap.add_argument("--vin", type=_vin, help="17-character VIN (overrides the one in --state-file)")
     ap.add_argument("--state-file", help="JSON file persisting DTCs, VIN, coding and odometer")
     ap.add_argument("--ignition", choices=["off", "accessory", "on"], default="on")
     ap.add_argument("--start-engine", action="store_true", help="crank the engine immediately")
@@ -51,10 +58,10 @@ def main(argv=None) -> int:
         return 2
 
     cfg = DmeConfig()
-    if a.vin:
-        cfg.vin = a.vin.upper()
     vehicle = Vehicle(ambient=a.ambient, thermal_scale=a.thermal_scale)
     dme = Dme(bus, vehicle, cfg, a.state_file)
+    if a.vin:  # applied after the state file is loaded so the flag wins
+        cfg.vin = a.vin
     if not a.no_broadcast:
         install_broadcast(dme)
     vehicle.driver.configure(a.scenario, a.speed)
